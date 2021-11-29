@@ -7,7 +7,7 @@ https://workbench.2xpu4.arvadosapi.com/projects/2xpu4-j7d0g-50i3pwf3a16ubbf
 This example has a docker container to provide the resources to run the example.
 
 To build the docker container, change to Dockerfile directory and run:
-docker build -t example . 
+docker build -t example .
 
 Below is the syntax on how to run a docker container (in this case called example) with 2 mounted volumes containing code and downloaded data.  You will have to replace these with correct paths for your directories .
 
@@ -15,4 +15,4 @@ docker run -v /YOURPATH/AI4AD:/AI4AD -v /YOURPATH/data:/data -ti example
 
 To run the example:
 * Adjust the filenames to reflect where you have your downloaded tile data
-* Run Rscript TiledData_Example.r  
+* Run Rscript TiledData_Example.r
