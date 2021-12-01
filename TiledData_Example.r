@@ -22,11 +22,11 @@ np <- import("numpy")
 
 # Loading in Filtered Tiled Data
 # X.npy, Xr.npy, Xc.npy: compoments used to generate a sparse matrix of the filtered data
-# XPCA.npy: matrix of top 20 PCA components of the 1-hot representation of the tiled data using 99% coverage
+# XPCA.npy: matrix of top 20 PCA components of the 1-hot representation of the tiled data
 # y.npy: corresponding AD phenotype value for each row of the filtered tile data
 # varvals.npy: vector indicating the tile variant represented by each column in the filtered tiled data matrix
 # tiletag.npy: vector of tile tag for each column in the filtered tiled matrix
-# zygosity.npy: vector indicating zygosity for each column in the filtered tiled data matrix, 1 if tile variant present in one allele, 2 if tile variant present in both alleles
+# zygosity.npy: vector indicating zygosity for each column in the filtered tiled data matrix, 1 if tile variant present in one allele, 2 if present in both alleles
 # annotations.csv:  mapping from tile variants to HGVS annotations relative to hg38
 # See 2xpu4-4zz18-bmvaczs8gw7di41/README_Filtered_2021_05.md for more details
 
