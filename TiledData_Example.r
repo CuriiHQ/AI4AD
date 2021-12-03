@@ -1,5 +1,5 @@
 ## Using R for an example to show to load the Tiled Data
-## and perform a simple GLM with LASSO on the data.  Note: using R because GLMnet
+## and perform a simple GLM with LASSO on the data. Note: using R because GLMnet
 ## is much faster than scikitlearn for performing LASSO and finding optimial regularization
 ## This model is simplified (i.e. does not include PCA including 1000 Genomes Data, Age, Gender or use Adaptive LASSO) and does not preform bootstrapping to find which variants are stable
 # This demo assumes you are using tiled data after the basic filtering step which has a different format
