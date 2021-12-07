@@ -21,6 +21,11 @@ scipy <- import("scipy")
 np <- import("numpy")
 
 # Loading in Filtered Tiled Data 
+#
+# Tile variants have been filtered using a chi2 filter between each separate tile variant and the AD phenotype. 
+# Only tile positions with 90% coverage are included (i.e. 90% of the tile variants in a tile position do not contain no-calls).  
+# The data also contains a matrix of the 20 top PCA components (standardized) of the 1-hot representation of the tiled data.
+#
 Xdata_file = '../keep/by_id/2xpu4-4zz18-bmvaczs8gw7di41/X.npy'
 Xrdata_file = '../keep/by_id/2xpu4-4zz18-bmvaczs8gw7di41/Xr.npy'
 Xcdata_file = '../keep/by_id/2xpu4-4zz18-bmvaczs8gw7di41/Xc.npy' 
