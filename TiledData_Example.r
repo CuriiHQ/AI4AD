@@ -21,23 +21,29 @@ scipy <- import("scipy")
 np <- import("numpy")
 
 # Loading in Filtered Tiled Data
-# X.npy, Xr.npy, Xc.npy: compoments used to generate a sparse matrix of the filtered data
-# XPCA.npy: matrix of top 20 PCA components of the 1-hot representation of the tiled data
-# y.npy: corresponding AD phenotype value for each row of the filtered tile data
-# varvals.npy: vector indicating the tile variant represented by each column in the filtered tiled data matrix
-# tiletag.npy: vector of tile tag for each column in the filtered tiled matrix
-# zygosity.npy: vector indicating zygosity for each column in the filtered tiled data matrix, 1 if tile variant present in one allele, 2 if present in both alleles
-# annotations.csv:  mapping from tile variants to HGVS annotations relative to hg38
-# See 2xpu4-4zz18-bmvaczs8gw7di41/README_Filtered_2021_05.md for more details
+# See 2xpu4-4zz18-bmvaczs8gw7di41/README_Filtered_2021_05.md for detailed descriptions of inputs
 
+# X.npy, Xr.npy, Xc.npy: compoments used to generate a sparse matrix of the filtered data
 Xdata_file = '../keep/by_id/2xpu4-4zz18-bmvaczs8gw7di41/X.npy'
 Xrdata_file = '../keep/by_id/2xpu4-4zz18-bmvaczs8gw7di41/Xr.npy'
 Xcdata_file = '../keep/by_id/2xpu4-4zz18-bmvaczs8gw7di41/Xc.npy'
+
+# XPCA.npy: matrix of top 20 PCA components of the 1-hot representation of the tiled data
 XPCA_file = '../keep/by_id/2xpu4-4zz18-bmvaczs8gw7di41/XPCA.npy'
+
+# y.npy: corresponding AD phenotype value for each row of the filtered tile data, 1 for case and 0 for control
 ydata_file = '../keep/by_id/2xpu4-4zz18-bmvaczs8gw7di41/y.npy'
+
+# varvals.npy: vector indicating the tile variant represented by each column in the filtered tiled data matrix
 tilevariant_file = '../keep/by_id/2xpu4-4zz18-bmvaczs8gw7di41/varvals.npy'
+
+# tiletag.npy: vector of tile tag for each column in the filtered tiled matrix
 tiletagnumber_file = '../keep/by_id/2xpu4-4zz18-bmvaczs8gw7di41/tiletag.npy'
+
+# zygosity.npy: vector indicating zygosity for each column in the filtered tiled data matrix, 1 if tile variant present in one allele, 2 if present in both alleles
 zygosity_file = '../keep/by_id/2xpu4-4zz18-bmvaczs8gw7di41/zygosity.npy'
+
+# annotations.csv:  mapping from tile variants to HGVS annotations relative to hg38
 annotation_file = '../keep/by_id/2xpu4-4zz18-1kvsfedea77ban7/annotations.csv'
 
 # Loading in X array and make into vector
@@ -73,7 +79,7 @@ Xtest <- Xmat[-dt,]
 ytrain <- y[dt]
 ytest <- y[-dt]
 
-# Caluclating weights
+# Caluclating weights for Weighted Linear Regression since our case/control ratio is not 50:50
 fraction_0_train <- rep(1 - sum(ytrain == 0) / length(ytrain), sum(ytrain == 0))
 fraction_1_train <- rep(1 - sum(ytrain == 1) / length(ytrain), sum(ytrain == 1))
 fraction_0_test <- rep(1 - sum(ytest == 0) / length(ytest), sum(ytest == 0))
@@ -130,15 +136,27 @@ print(head(tiledata,20))
 # Note the following HGVS annotations may be of importance
 # Tile 9553646, variant 2 --> chr19:g.44908684T>C, https://www.ncbi.nlm.nih.gov/snp/rs429358
 
+# Helper function to look up tile variants in the annotation file
+print_annotation <- function(tiletag, varvals) {
+   pattern = paste("", tiletag, as.character(varvals), "", sep=",")
+   command = paste("grep", pattern, annotation_file)
+   returncode <- system(command)
+   # return code is 1 if and only if there is no matching result, i.e., if the tile variant is the same as ref
+   return(returncode)
+}
+
 print("Finding annotations to top 20 tile variants")
 
 for (i in 1:20) {
-   grepstr = 'grep ,'
-   grepstr = paste0(grepstr,tiledata$tiletag[i])
-   tilestr = as.character(as.numeric(tiledata$varvals[i])-1) # -1 offset required for filtered data
-   grepstr = paste(grepstr,tilestr,sep=",")
-   grepstr = paste0(grepstr,',')
-   grepstr = paste(grepstr,annotation_file)
-#   print(grepstr)
-   tryCatch( {annotations <- system(grepstr)})
+   tiletag = tiledata$tiletag[i]
+   varvals = as.numeric(tiledata$varvals[i])-1 # -1 offset required for filtered data
+   rc = print_annotation(tiletag, varvals)
+   if (varvals != 1 & rc == 1) { # if that tile variant is ref, look up the most common tile variant in that position instead
+     for (i in 1:varvals-1) {
+       rc = print_annotation(tiletag, i)
+       if (rc == 0) {
+         break
+       }
+     }
+   }
 }
