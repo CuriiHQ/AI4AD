@@ -137,27 +137,39 @@ print(head(tiledata,20))
 # Tile 9553646, variant 2 --> chr19:g.44908684T>C, https://www.ncbi.nlm.nih.gov/snp/rs429358
 
 # Helper function to look up tile variants in the annotation file
-print_annotation <- function(tiletag, varvals) {
+# Returns NULL if there is no matching result, i.e., if the tile variant is the same as ref
+get_annotation <- function(tiletag, varvals) {
   pattern = paste("", tiletag, as.character(varvals), "", sep=",")
   command = paste("grep", pattern, annotation_file)
-  returncode <- system(command)
-  # return code is 1 if and only if there is no matching result, i.e., if the tile variant is the same as ref
-  return(returncode)
+  tryCatch(
+    {
+      annotation <- system(command, intern = TRUE)
+      return(annotation)
+    },
+    warning = function(w) {
+      return(NULL)
+    }
+  )
 }
 
 print("Finding annotations to top 20 tile variants")
+results = c()
 for (i in 1:20) {
   tiletag = tiledata$tiletag[i]
   if (!is.na(tiletag)) {
     varvals = as.numeric(tiledata$varvals[i])-1 # -1 offset required for filtered data
-    rc = print_annotation(tiletag, varvals)
-    if (varvals != 1 & rc == 1) { # if that tile variant is ref, look up the most common tile variant in that position instead
+    annotation = get_annotation(tiletag, varvals)
+    if (!is.null(annotation)) {
+      results = c(results, annotation)
+    } else if (varvals != 1) { # if that tile variant is ref, look up the most common tile variant in that position instead
       for (i in 1:varvals-1) {
-        rc = print_annotation(tiletag, i)
-        if (rc == 0) {
-           break
+        annotation <- get_annotation(tiletag, i)
+        if (!is.null(annotation)) {
+          results = c(results, annotation)
+          break
         }
       }
     }
   }
 }
+print(results)
