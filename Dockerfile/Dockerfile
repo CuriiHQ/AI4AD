@@ -32,3 +32,7 @@ RUN pip3 install sklearn
 RUN pip3 install --upgrade scipy
 RUN pip3 install seaborn
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 2
+
+RUN pip3 install notebook
+RUN R -e "install.packages('IRkernel', repos = 'http://cran.us.r-project.org')"
+RUN R -e "IRkernel::installspec(user = FALSE)"
