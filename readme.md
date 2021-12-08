@@ -13,6 +13,13 @@ Below is the syntax on how to run a docker container (in this case called exampl
 
 docker run -v /YOURPATH/AI4AD:/AI4AD -v /YOURPATH/data:/data -ti example
 
-To run the example:
+To run the example R script:
 * Adjust the file paths to reflect where you have your downloaded tile data (e.g., Xdata_file, Xrdata_file, etc)
 * Run Rscript TiledData_Example.r
+
+To run the example jupyter notebook in a container through a remote server:
+* Run command in remote server
+docker run -p 127.0.0.1:8080:8888 -v /YOURPATH/AI4AD:/AI4AD -v /YOURPATH/data:/data -ti example /usr/bin/python3 /usr/local/bin/jupyter-notebook --no-browser --ip 0.0.0.0 --port=8888 --allow-root
+* Open another terminal in local host, run command
+ssh -N -L localhost:8000:127.0.0.1:8080 <user>@<remote>
+* Open browser in local host, access http://localhost:8000

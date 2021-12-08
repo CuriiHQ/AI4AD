@@ -148,13 +148,15 @@ print_annotation <- function(tiletag, varvals) {
 print("Finding annotations to top 20 tile variants")
 for (i in 1:20) {
   tiletag = tiledata$tiletag[i]
-  varvals = as.numeric(tiledata$varvals[i])-1 # -1 offset required for filtered data
-  rc = print_annotation(tiletag, varvals)
-  if (varvals != 1 & rc == 1) { # if that tile variant is ref, look up the most common tile variant in that position instead
-    for (i in 1:varvals-1) {
-      rc = print_annotation(tiletag, i)
-      if (rc == 0) {
-         break
+  if (!is.na(tiletag)) {
+    varvals = as.numeric(tiledata$varvals[i])-1 # -1 offset required for filtered data
+    rc = print_annotation(tiletag, varvals)
+    if (varvals != 1 & rc == 1) { # if that tile variant is ref, look up the most common tile variant in that position instead
+      for (i in 1:varvals-1) {
+        rc = print_annotation(tiletag, i)
+        if (rc == 0) {
+           break
+        }
       }
     }
   }
