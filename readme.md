@@ -1,4 +1,4 @@
-# Example for running a GLM on Tiled AI Data for AI4AD Consortium
+# Example for running a GLM on Tiled AD Data for AI4AD Consortium
 This example requires access to tiled data available to members of the AI4AD consortium. If you require access, please let the folks at Curii know.
 
 If you have access, data can be downloaded from here:
